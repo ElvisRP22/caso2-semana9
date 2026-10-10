@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CyberSec Ops · Portal de Cumplimiento ISO 27001</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex font-sans antialiased">
+
+  <!-- ================= BARRA LATERAL (SIDEBAR) ================= -->
+  <aside class="w-64 bg-slate-900 border-r border-slate-800 flex flex-col justify-between hidden md:flex">
+    <div>
+      <div class="h-16 flex items-center gap-3 px-6 border-b border-slate-800">
+        <div class="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center text-white font-bold text-sm shadow-md">
+          <i class="fa-solid fa-shield-halved"></i>
+        </div>
+        <div>
+          <h1 class="text-sm font-bold text-white leading-tight">Securitas Enterprise</h1>
+          <span class="text-[10px] text-indigo-400 font-semibold tracking-wider uppercase">SGSI ISO 27001:2022</span>
+        </div>
+      </div>
+
+      <nav class="p-4 space-y-1.5 text-xs font-medium">
+        <button onclick="setTab('policies')" id="nav-policies" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-lg bg-indigo-600/10 text-indigo-400 border border-indigo-500/20">
+          <i class="fa-solid fa-file-shield w-4 text-center"></i>
+          <span>Procedimiento & Políticas</span>
+        </button>
+        <button onclick="setTab('audit')" id="nav-audit" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-slate-400 hover:text-slate-200 hover:bg-slate-800/60 transition">
+          <i class="fa-solid fa-clipboard-check w-4 text-center"></i>
+          <span>Simulador de Auditoría</span>
+        </button>
+        <button onclick="setTab('governance')" id="nav-governance" class="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-slate-400 hover:text-slate-200 hover:bg-slate-800/60 transition">
+          <i class="fa-solid fa-signature w-4 text-center"></i>
+          <span>Gobernanza & Aprobación</span>
+        </button>
+      </nav>
+    </div>
+
+    <div class="p-4 border-t border-slate-800 text-[11px] text-slate-500">
+      <div class="flex items-center justify-between mb-1">
+        <span>Estado del Sistema</span>
+        <span class="inline-flex items-center gap-1.5 text-emerald-400 font-semibold">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> Activo
+        </span>
+      </div>
+      <span>Versión del SGSI: 2026.4</span>
+    </div>
+  </aside>
+
+  <!-- ================= CONTENEDOR PRINCIPAL ================= -->
+  <div class="flex-1 flex flex-col min-w-0">
+    
+    <!-- Topbar -->
+    <header class="h-16 bg-slate-900/60 backdrop-blur border-b border-slate-800 px-6 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <span class="px-2.5 py-1 rounded bg-slate-800 text-slate-300 text-xs font-mono font-bold border border-slate-700">PR-SEC-04</span>
+        <h2 class="text-sm font-semibold text-white hidden sm:block">Seguridad en Trabajo Remoto y Conexiones VPN</h2>
+      </div>
+      <div class="flex items-center gap-4">
+        <div class="text-right hidden sm:block">
+          <p class="text-xs font-medium text-slate-200">Ing. Oficial de Seguridad</p>
+          <p class="text-[10px] text-slate-500">Auditor Interno TI</p>
+        </div>
+        <div class="w-8 h-8 rounded-full bg-slate-700 flex items-center justify-center text-xs font-bold text-sky-400 border border-slate-600">
+          OS
+        </div>
+      </div>
+    </header>
+
+    <!-- Contenido Dinámico con Scroll -->
+    <main class="flex-1 p-6 md:p-8 overflow-y-auto space-y-6">
+
+      <!-- Métricas del Procedimiento -->
+      <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl">
+          <p class="text-xs text-slate-400">Total Políticas Operativas</p>
+          <p class="text-2xl font-bold text-white mt-1">6 Políticas</p>
+          <span class="text-[10px] text-indigo-400 font-medium">Controles ISO 27001 Anexo A</span>
+        </div>
+        <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl">
+          <p class="text-xs text-slate-400">Índice de Conformidad Actual</p>
+          <p id="kpi-compliance" class="text-2xl font-bold text-emerald-400 mt-1">100%</p>
+          <span class="text-[10px] text-slate-500">Monitoreo continuo de endpoints</span>
+        </div>
+        <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl">
+          <p class="text-xs text-slate-400">No Conformidades Activas</p>
+          <p id="kpi-violations" class="text-2xl font-bold text-amber-400 mt-1">0</p>
+          <span class="text-[10px] text-slate-500">Casos en investigación</span>
+        </div>
+        <div class="bg-slate-900 border border-slate-800 p-4 rounded-xl">
+          <p class="text-xs text-slate-400">Estado Documental</p>
+          <p class="text-2xl font-bold text-sky-400 mt-1">Aprobado</p>
+          <span class="text-[10px] text-slate-500">Vigencia: Octubre 2026</span>
+        </div>
+      </section>
+
+      <!-- ================= VISTA 1: PROCEDIMIENTO Y TABLA DE POLÍTICAS ================= -->
+      <section id="view-policies" class="space-y-6">
+        
+        <!-- Bloque 1 & 2: Objetivo y Alcance (Tarjetas de App) -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="bg-slate-900 border border-slate-800 p-5 rounded-xl space-y-2">
+            <div class="flex items-center gap-2 text-indigo-400 text-xs font-bold uppercase tracking-wider">
+              <i class="fa-solid fa-bullseye"></i> 1. Objetivo del Procedimiento
+            </div>
+            <p class="text-xs md:text-sm text-slate-300 leading-relaxed">
+              Establecer las directrices operativas y controles de seguridad obligatorios para salvaguardar la confidencialidad, integridad y disponibilidad de la información institucional durante la ejecución de labores en modalidad remota o teletrabajo, mediante enlaces seguros y gestión de dispositivos de punto final.
+            </p>
+          </div>
+
+          <div class="bg-slate-900 border border-slate-800 p-5 rounded-xl space-y-2">
+            <div class="flex items-center gap-2 text-indigo-400 text-xs font-bold uppercase tracking-wider">
+              <i class="fa-solid fa-arrows-to-eye"></i> 2. Alcance Operativo
+            </div>
+            <p class="text-xs md:text-sm text-slate-300 leading-relaxed">
+              Aplica a todos los empleados, directores, consultores externos y personal tercerizado que accedan a la infraestructura informática, sistemas ERP/CRM corporativos o repositorios de datos desde locaciones fuera de las instalaciones físicas de la organización.
+            </p>
+          </div>
+        </div>
+
+        <!-- Bloque 3: Tabla Interactiva de Políticas (Estructura formal con UI moderna) -->
+        <div class="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden shadow-xl">
+          <div class="p-5 border-b border-slate-800 flex flex-col sm:flex-row justify-between sm:items-center gap-3">
+            <div>
+              <h3 class="text-base font-bold text-white">3. Matriz de Políticas de Seguridad Operativa</h3>
+              <p class="text-xs text-slate-400">Controles implementados conforme a la norma ISO/IEC 27001:2022</p>
+            </div>
+            <span class="text-xs px-3 py-1 rounded bg-slate-800 border border-slate-700 text-slate-300">
+              Código: <strong class="text-indigo-400">PR-SEC-04</strong> · Rev: 02
+            </span>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs border-collapse">
+              <thead>
+                <tr class="bg-slate-950/60 border-b border-slate-800 text-slate-400 uppercase tracking-wider">
+                  <th class="p-4 w-16 text-center font-bold">N.º</th>
+                  <th class="p-4 w-60 font-bold">Nombre de Política</th>
+                  <th class="p-4 font-bold">Pasos del Proceso de Seguridad</th>
+                  <th class="p-4 w-36 text-center font-bold">Simulación</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-800 text-slate-300" id="policyTableRows">
+                <!-- Se inyecta dinámicamente con JS -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Bloques 4 & 5: Responsabilidades y Sanciones -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="bg-slate-900 border border-slate-800 p-5 rounded-xl space-y-2">
+            <h4 class="text-xs font-bold text-amber-400 uppercase tracking-wider flex items-center gap-2">
+              <i class="fa-solid fa-user-shield"></i> 4. Responsabilidades
+            </h4>
+            <ul class="text-xs text-slate-300 space-y-1.5 list-disc pl-4 leading-relaxed">
+              <li><strong>Usuario Remoto:</strong> Custodiar el equipo asignado, evitar la conexión a redes no seguras y notificar inmediatamente incidentes o pérdidas.</li>
+              <li><strong>Área de Redes y Ciberseguridad:</strong> Monitorear túneles VPN, forzar parches EDR, gestionar llaves MFA y revocar accesos en caso de riesgo.</li>
+              <li><strong>Jefaturas de Área:</strong> Validar el listado de colaboradores autorizados para teletrabajo y comunicar ceses oportunamente.</li>
+            </ul>
+          </div>
+
+          <div class="bg-slate-900 border border-slate-800 p-5 rounded-xl space-y-2">
+            <h4 class="text-xs font-bold text-rose-400 uppercase tracking-wider flex items-center gap-2">
+              <i class="fa-solid fa-gavel"></i> 5. Régimen de Sanciones
+            </h4>
+            <p class="text-xs text-slate-300 leading-relaxed">
+              El incumplimiento intencional o negligente de las medidas descritas derivará en la revocación inmediata del acceso remoto, la emisión de memorándums de amonestación administrativa en el legajo del colaborador y eventuales acciones legales conforme al Reglamento Interno y leyes laborales vigentes.
+            </p>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- ================= VISTA 2: SIMULADOR DE AUDITORÍA (CASOS PRÁCTICOS) ================= -->
+      <section id="view-audit" class="hidden space-y-6">
+        <div class="bg-slate-900 border border-slate-800 p-6 rounded-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+          <div>
+            <h3 class="text-base font-bold text-white">Laboratorio de Auditoría: Escenarios de Campo</h3>
+            <p class="text-xs text-slate-400 mt-1">Evalúa situaciones reales de teletrabajo e identifica si cumplen o violan el procedimiento PR-SEC-04.</p>
+          </div>
+          <button onclick="resetAuditSim()" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-xs rounded border border-slate-700 transition">
+            <i class="fa-solid fa-rotate-right mr-1.5"></i> Reiniciar Casos
+          </button>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          
+          <!-- Lista de Incidentes / Casos -->
+          <div class="lg:col-span-1 space-y-3" id="auditCaseList">
+            <!-- Items de casos -->
+          </div>
+
+          <!-- Detalle y Análisis del Escenario Seleccionado -->
+          <div class="lg:col-span-2 bg-slate-900 border border-slate-800 rounded-xl p-6 space-y-5">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-4">
+              <div>
+                <span id="detailCasePolicy" class="text-xs font-mono font-bold text-indigo-400">POLÍTICA 3.1</span>
+                <h4 id="detailCaseTitle" class="text-lg font-bold text-white mt-0.5">Título del Escenario</h4>
+              </div>
+              <span id="detailCaseStatusBadge" class="text-xs px-2.5 py-1 rounded font-bold bg-slate-800 text-slate-400">
+                Pendiente de Evaluación
+              </span>
+            </div>
+
+            <!-- Narrativa del Caso -->
+            <div class="bg-slate-950 p-4 rounded-lg border border-slate-800">
+              <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1">Evidencia / Hallazgo del Auditor:</span>
+              <p id="detailCaseNarrative" class="text-xs md:text-sm text-slate-300 leading-relaxed"></p>
+            </div>
+
+            <!-- Comparativa de Cumple vs Incumple -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+              <div class="p-4 rounded-xl bg-emerald-950/20 border border-emerald-600/30 space-y-1">
+                <span class="font-bold text-emerald-400 flex items-center gap-1.5">
+                  <i class="fa-solid fa-circle-check"></i> Escenario de CUMPLIMIENTO
+                </span>
+                <p id="detailCaseCumple" class="text-slate-300 leading-relaxed pt-1"></p>
+              </div>
+
+              <div class="p-4 rounded-xl bg-rose-950/20 border border-rose-600/30 space-y-1">
+                <span class="font-bold text-rose-400 flex items-center gap-1.5">
+                  <i class="fa-solid fa-circle-xmark"></i> Escenario de INCUMPLIMIENTO
+                </span>
+                <p id="detailCaseIncumple" class="text-slate-300 leading-relaxed pt-1"></p>
+              </div>
+            </div>
+
+            <!-- Impacto ISO 27001 -->
+            <div class="bg-slate-800/40 border border-slate-800 p-4 rounded-lg flex flex-wrap justify-between items-center gap-3 text-xs">
+              <div>
+                <span class="text-slate-400 text-[10px] block">Tríada ISO 27001 Protegida/Afectada:</span>
+                <strong id="detailCaseCID" class="text-amber-300">Confidencialidad</strong>
+              </div>
+              <div>
+                <span class="text-slate-400 text-[10px] block">Acción Operativa Requerida:</span>
+                <strong id="detailCaseAction" class="text-sky-300">Revisión de Logs</strong>
+              </div>
+            </div>
+
+            <!-- Botones de Veredicto -->
+            <div class="pt-2 flex gap-4">
+              <button onclick="evaluateActiveCase(false)" class="flex-1 py-3 bg-rose-600/20 hover:bg-rose-600/30 text-rose-300 border border-rose-500/40 rounded-xl text-xs font-bold uppercase tracking-wider transition">
+                <i class="fa-solid fa-triangle-exclamation mr-1.5"></i> Declarar Incumplimiento
+              </button>
+              <button onclick="evaluateActiveCase(true)" class="flex-1 py-3 bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-300 border border-emerald-500/40 rounded-xl text-xs font-bold uppercase tracking-wider transition">
+                <i class="fa-solid fa-shield-check mr-1.5"></i> Validar Cumplimiento
+              </button>
+            </div>
+
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ================= VISTA 3: GOBERNANZA Y FIRMAS ================= -->
+      <section id="view-governance" class="hidden space-y-6">
+        <div class="bg-slate-900 border border-slate-800 p-6 rounded-xl space-y-2">
+          <h3 class="text-base font-bold text-white">Bloque de Trazabilidad y Aprobación del SGSI</h3>
+          <p class="text-xs text-slate-400">Firmas criptográficas de validación del procedimiento según ISO/IEC 27001.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          
+          <!-- Tarjeta 1: Revisado -->
+          <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+              <span class="text-xs font-bold text-slate-400">FASE 1: REVISIÓN TÉCNICA</span>
+              <span class="text-[10px] px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 font-bold">Firmado</span>
+            </div>
+            <div>
+              <h5 class="text-sm font-bold text-white">Ing. Roberto Carrión M.</h5>
+              <p class="text-xs text-slate-400">Jefe de Seguridad de la Información (CISO)</p>
+            </div>
+            <div class="p-3 bg-slate-950 rounded border border-slate-800 font-mono text-[10px] text-slate-500 space-y-1">
+              <p>HASH: 8f4b2c9e1a0d7f3</p>
+              <p>FECHA: 09/10/2026 14:22 UTC</p>
+            </div>
+          </div>
+
+          <!-- Tarjeta 2: Validado -->
+          <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+              <span class="text-xs font-bold text-slate-400">FASE 2: CONFORMIDAD</span>
+              <span class="text-[10px] px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 font-bold">Validado</span>
+            </div>
+            <div>
+              <h5 class="text-sm font-bold text-white">Lic. Sofía Montenegro T.</h5>
+              <p class="text-xs text-slate-400">Oficial de Cumplimiento & Auditoría ISO</p>
+            </div>
+            <div class="p-3 bg-slate-950 rounded border border-slate-800 font-mono text-[10px] text-slate-500 space-y-1">
+              <p>HASH: d3a1e94f00bc682</p>
+              <p>FECHA: 09/10/2026 16:05 UTC</p>
+            </div>
+          </div>
+
+          <!-- Tarjeta 3: Aprobado -->
+          <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 space-y-4">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+              <span class="text-xs font-bold text-slate-400">FASE 3: APROBACIÓN FINAL</span>
+              <span class="text-[10px] px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 font-bold">Aprobado</span>
+            </div>
+            <div>
+              <h5 class="text-sm font-bold text-white">Dr. Alejandro Morales B.</h5>
+              <p class="text-xs text-slate-400">Gerencia General Corporativa</p>
+            </div>
+            <div class="p-3 bg-slate-950 rounded border border-slate-800 font-mono text-[10px] text-slate-500 space-y-1">
+              <p>HASH: 44c0b89e211fa77</p>
+              <p>FECHA: 09/10/2026 18:30 UTC</p>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- ================= LÓGICA DE LA APLICACIÓN ================= -->
+  <script>
+    // PROCEDIMIENTO PROPIO: Seguridad en Trabajo Remoto y Conexiones VPN (PR-SEC-04)
+    const policies = [
+      {
+        num: "3.1",
+        name: "Autenticación de Túnel VPN y MFA",
+        steps: [
+          "El acceso a la red privada corporativa requiere obligatoriamente cliente VPN oficial con certificado digital instalado.",
+          "Es obligatorio validar el inicio de sesión mediante Autenticación Multifactor (MFA en token o app).",
+          "Las sesiones VPN inactivas se cerrarán automáticamente tras 30 minutos sin tráfico."
+        ],
+        scenario: "Un desarrollador comparte su token de autenticación MFA por Teams con un compañero para que este ingrese a realizar un despliegue desde otra red.",
+        cumple: "Cada usuario mantiene su dispositivo MFA personal e intransferible, aprobando únicamente sus propios accesos.",
+        incumple: "Prestar el código push o token MFA a otro colaborador para evadir los controles de identidad.",
+        cid: "Confidencialidad e Integridad",
+        action: "Revocación inmediata del certificado digital y bloqueo de la cuenta."
+      },
+      {
+        num: "3.2",
+        name: "Cifrado Completo de Almacenamiento (Endpoint)",
+        steps: [
+          "Toda computadora portátil asignada a trabajo remoto debe contar con cifrado de disco completo (BitLocker o FileVault).",
+          "La clave de recuperación se almacena en el directorio centralizado bajo custodia exclusiva de TI.",
+          "Queda terminantemente prohibido deshabilitar o suspender el cifrado de volumen."
+        ],
+        scenario: "A un consultor le sustraen la laptop de su vehículo mientras cenaba. La máquina contaba con BitLocker activo con clave TPM.",
+        cumple: "La laptop mantiene el cifrado de volumen activo, impidiendo que terceros extraigan la base de datos aun montando el disco en otro equipo.",
+        incumple: "Guardar archivos de clientes en laptops personales sin cifrado de hardware ni protección BitLocker.",
+        cid: "Confidencialidad de la Información",
+        action: "Envío de comando de borrado remoto (Wipe) vía consola MDM corporativa."
+      },
+      {
+        num: "3.3",
+        name: "Conectividad en Redes Wi-Fi Confiables",
+        steps: [
+          "Se prohíbe terminantemente realizar labores corporativas conectados a redes Wi-Fi públicas abiertas (cafeterías, aeropuertos o plazas) sin túnel VPN activo.",
+          "El enrutador doméstico del colaborador debe contar con protocolo de seguridad WPA2-PSK o WPA3 como mínimo.",
+          "Está restringido cambiar las DNS corporativas asignadas por el adaptador seguro."
+        ],
+        scenario: "Un analista de finanzas trabaja en el área de comidas de un centro comercial conectado al Wi-Fi gratuito sin iniciar la VPN corporativa.",
+        cumple: "El colaborador utiliza los datos móviles cifrados de su línea corporativa o enciende la VPN antes de abrir el ERP.",
+        incumple: "Transmitir reportes contables sobre un Wi-Fi abierto sin cifrar expuesto a ataques Man-in-the-Middle (MitM).",
+        cid: "Confidencialidad e Integridad del Tráfico",
+        action: "Notificación preventiva al usuario y forzado automático del túnel VPN (Always-On)."
+      },
+      {
+        num: "3.4",
+        name: "Prevención de Fuga de Datos (DLP) y Medios Externos",
+        steps: [
+          "Queda prohibido transferir información de la empresa a correos personales, servicios de nube externos (Mega, WeTransfer) o dispositivos USB no homologados.",
+          "Todo documento de trabajo debe sincronizarse exclusivamente en los repositorios de SharePoint corporativo.",
+          "Se prohíbe el uso de impresoras domésticas para imprimir documentación catalogada como Confidencial o Restringida."
+        ],
+        scenario: "Una supervisora envía la base de datos de salarios a su correo personal de Gmail para 'revisarla el fin de semana desde su tablet'.",
+        cumple: "Toda consulta de información sensible se realiza en línea mediante el repositorio oficial de la empresa sin extraer copias externas.",
+        incumple: "Reenviar balances de personal a cuentas gratuitas fuera del dominio institucional.",
+        cid: "Confidencialidad y Control de Propiedad",
+        action: "Apertura de expediente sancionatorio por fuga de datos y bloqueo de reenvíos por DLP."
+      },
+      {
+        num: "3.5",
+        name: "Notificación Inmediata de Incidentes y Extravíos",
+        steps: [
+          "Ante la pérdida, robo o sospecha de compromiso de un equipo remoto, el usuario debe reportarlo a la Mesa de Ayuda en un plazo menor a 2 horas.",
+          "El usuario no debe intentar restaurar de fábrica el equipo por iniciativa propia antes de la evaluación forense.",
+          "TI activará el protocolo de aislamiento perimetral para invalidar credenciales y certificados asociados."
+        ],
+        scenario: "Un ejecutivo sufre el robo de su laptop un viernes por la noche pero espera hasta el lunes por la mañana para avisar a TI.",
+        cumple: "El usuario llama a la línea de guardia de seguridad dentro de los primeros 60 minutos del suceso para bloquear sus tokens.",
+        incumple: "Ocultar la pérdida del equipo durante días permitiendo ventanas de ataque sobre la sesión guardada.",
+        cid: "Disponibilidad y Trazabilidad",
+        action: "Desconexión de tokens en Active Directory y reporte formal de no conformidad."
+      },
+      {
+        num: "3.6",
+        name: "Postura de Seguridad y Puesto Limpio en el Hogar",
+        steps: [
+          "Se debe bloquear la sesión (Win+L / Cmd+Ctrl+Q) cada vez que el colaborador se levante de su puesto en el hogar.",
+          "Está prohibido que familiares, amistades o terceros utilicen el equipo corporativo para navegar o jugar.",
+          "Las pantallas deben orientarse de manera que personas externas no puedan visualizar datos sensibles desde ventanas o accesos."
+        ],
+        scenario: "El hijo de un analista utiliza la laptop institucional para instalar un juego online mientras su padre descansaba.",
+        cumple: "El equipo corporativo es de uso exclusivo del titular y permanece con contraseña bloqueada en todo momento.",
+        incumple: "Prestar la computadora laboral a terceros en el entorno doméstico exponiendo el equipo a malware.",
+        cid: "Integridad y Confidencialidad",
+        action: "Llamada de atención administrativa y reinstalación de la imagen limpia de SO."
+      }
+    ];
+
+    let activeCaseIndex = 0;
+    let auditResults = {};
+
+    function init() {
+      renderPoliciesTable();
+      renderAuditCases();
+      selectAuditCase(0);
+    }
+
+    // Renderizar la tabla de políticas de la pestaña 1
+    function renderPoliciesTable() {
+      const tbody = document.getElementById('policyTableRows');
+      tbody.innerHTML = policies.map((p, idx) => `
+        <tr class="hover:bg-slate-800/40 transition">
+          <td class="p-4 font-mono font-bold text-center text-indigo-400 align-top">${p.num}</td>
+          <td class="p-4 font-bold text-white align-top">
+            ${p.name}
+            <span class="block text-[10px] text-slate-500 font-normal mt-0.5">Control ISO: A.6.7 / A.8.20</span>
+          </td>
+          <td class="p-4 leading-relaxed align-top">
+            <ul class="list-disc pl-4 space-y-1 text-slate-300">
+              ${p.steps.map(s => `<li>${s}</li>`).join('')}
+            </ul>
+          </td>
+          <td class="p-4 text-center align-middle">
+            <button onclick="goToAudit(${idx})" class="px-3 py-1.5 rounded-lg bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-300 border border-indigo-500/30 font-semibold text-xs transition">
+              <i class="fa-solid fa-play text-[10px] mr-1"></i> Probar Caso
+            </button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    // Renderizar el listado de casos en la pestaña 2
+    function renderAuditCases() {
+      const list = document.getElementById('auditCaseList');
+      list.innerHTML = policies.map((p, idx) => {
+        const status = auditResults[idx];
+        let statusBadge = '<span class="text-[10px] text-slate-500 font-medium">Sin evaluar</span>';
+        if (status === true) {
+          statusBadge = '<span class="text-[10px] text-emerald-400 font-bold"><i class="fa-solid fa-check"></i> Cumple</span>';
+        } else if (status === false) {
+          statusBadge = '<span class="text-[10px] text-rose-400 font-bold"><i class="fa-solid fa-xmark"></i> Incumple</span>';
+        }
+
+        const isSelected = activeCaseIndex === idx;
+        const borderClass = isSelected ? 'border-indigo-500 bg-slate-800/80' : 'border-slate-800 bg-slate-900 hover:border-slate-700';
+
+        return `
+          <div onclick="selectAuditCase(${idx})" class="p-4 rounded-xl border ${borderClass} cursor-pointer transition space-y-1">
+            <div class="flex justify-between items-center">
+              <span class="text-xs font-mono font-bold text-indigo-400">Política ${p.num}</span>
+              ${statusBadge}
+            </div>
+            <h5 class="text-xs font-bold text-white truncate">${p.name}</h5>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function selectAuditCase(idx) {
+      activeCaseIndex = idx;
+      const p = policies[idx];
+
+      document.getElementById('detailCasePolicy').textContent = `POLÍTICA ${p.num} · ${p.name.toUpperCase()}`;
+      document.getElementById('detailCaseTitle').textContent = `Auditoría Operativa: ${p.name}`;
+      document.getElementById('detailCaseNarrative').textContent = p.scenario;
+      document.getElementById('detailCaseCumple').textContent = p.cumple;
+      document.getElementById('detailCaseIncumple').textContent = p.incumple;
+      document.getElementById('detailCaseCID').textContent = p.cid;
+      document.getElementById('detailCaseAction').textContent = p.action;
+
+      const badge = document.getElementById('detailCaseStatusBadge');
+      if (auditResults[idx] === true) {
+        badge.className = "text-xs px-2.5 py-1 rounded font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40";
+        badge.textContent = "Conforme (Cumplimiento)";
+      } else if (auditResults[idx] === false) {
+        badge.className = "text-xs px-2.5 py-1 rounded font-bold bg-rose-500/20 text-rose-300 border border-rose-500/40";
+        badge.textContent = "No Conforme (Incumplimiento)";
+      } else {
+        badge.className = "text-xs px-2.5 py-1 rounded font-bold bg-slate-800 text-slate-400";
+        badge.textContent = "Pendiente de Evaluación";
+      }
+
+      renderAuditCases();
+    }
+
+    function evaluateActiveCase(verdict) {
+      auditResults[activeCaseIndex] = verdict;
+      selectAuditCase(activeCaseIndex);
+      updateKPIs();
+    }
+
+    function updateKPIs() {
+      const total = policies.length;
+      const evaluated = Object.keys(auditResults).length;
+      let violations = 0;
+
+      Object.values(auditResults).forEach(v => {
+        if (v === false) violations++;
+      });
+
+      document.getElementById('kpi-violations').textContent = violations;
+
+      if (evaluated > 0) {
+        const compliance = Math.round(((evaluated - violations) / evaluated) * 100);
+        document.getElementById('kpi-compliance').textContent = `${compliance}%`;
+        document.getElementById('kpi-compliance').className = compliance < 70 ? 'text-2xl font-bold text-rose-400 mt-1' : 'text-2xl font-bold text-emerald-400 mt-1';
+      }
+    }
+
+    function resetAuditSim() {
+      auditResults = {};
+      updateKPIs();
+      selectAuditCase(0);
+    }
+
+    function goToAudit(idx) {
+      setTab('audit');
+      selectAuditCase(idx);
+    }
+
+    function setTab(tab) {
+      document.getElementById('view-policies').classList.add('hidden');
+      document.getElementById('view-audit').classList.add('hidden');
+      document.getElementById('view-governance').classList.add('hidden');
+
+      document.getElementById('nav-policies').className = "w-full flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-slate-400 hover:text-slate-200 hover:bg-slate-800/60 transition";
+      document.getElementById('nav-audit').className = "w-full flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-slate-400 hover:text-slate-200 hover:bg-slate-800/60 transition";
+      document.getElementById('nav-governance').className = "w-full flex items-center gap-3 px-3.5 py-2.5 rounded-lg text-slate-400 hover:text-slate-200 hover:bg-slate-800/60 transition";
+
+      if (tab === 'policies') {
+        document.getElementById('view-policies').classList.remove('hidden');
+        document.getElementById('nav-policies').className = "w-full flex items-center gap-3 px-3.5 py-2.5 rounded-lg bg-indigo-600/10 text-indigo-400 border border-indigo-500/20";
+      } else if (tab === 'audit') {
+        document.getElementById('view-audit').classList.remove('hidden');
+        document.getElementById('nav-audit').className = "w-full flex items-center gap-3 px-3.5 py-2.5 rounded-lg bg-indigo-600/10 text-indigo-400 border border-indigo-500/20";
+      } else if (tab === 'governance') {
+        document.getElementById('view-governance').classList.remove('hidden');
+        document.getElementById('nav-governance').className = "w-full flex items-center gap-3 px-3.5 py-2.5 rounded-lg bg-indigo-600/10 text-indigo-400 border border-indigo-500/20";
+      }
+    }
+
+    window.onload = init;
+  </script>
+</body>
+</html>
